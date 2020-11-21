@@ -1,15 +1,8 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const User = require('../models/user');
 const app = express();
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-app.use(bodyParser.json());
 
 app.get('/user', (req, res) => {
 
