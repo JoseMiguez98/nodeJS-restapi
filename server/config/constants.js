@@ -1,5 +1,5 @@
-const LOCAL = 'DEV';
-const PROD = 'PROD';
+const LOCAL = 'development';
+const PROD = 'production';
 
 module.exports = {
   LOCAL,
