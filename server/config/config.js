@@ -10,6 +10,22 @@ const ENV = require('./constants');
 
 /*
 ===========================
+JWT Expire time
+===========================
+*/
+
+process.env.JWT_EXPIRE = 60*60*24*30;
+
+/*
+===========================
+JWT Seed
+===========================
+*/
+
+process.env.JWT_SEED = process.env.JWT_SEED || 'dev-seed';
+
+/*
+===========================
  Database url config
 ===========================
 */
