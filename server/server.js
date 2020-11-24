@@ -1,9 +1,13 @@
-// Set ENV variables
-require('./config/config');
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const path = require('path');
+
+// Set ENV variables
+require('./config/config');
+
+// Dir to serve static files
+app.use(express.static(path.resolve(`${__dirname}/../public`)));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
