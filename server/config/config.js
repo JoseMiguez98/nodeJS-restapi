@@ -22,7 +22,7 @@ JWT Expire time
 ===========================
 */
 
-process.env.JWT_EXPIRE = 60*60*24*30;
+process.env.JWT_EXPIRE = '48h';
 
 /*
 ===========================
