@@ -1,3 +1,5 @@
 .env
 node_modules
 configs.txt
+uploads/*
+tmp

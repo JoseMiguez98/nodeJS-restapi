@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
+const fileUpload = require('express-fileupload');
 
 // Set ENV variables
 require('./config/config');
@@ -14,6 +15,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+
+// set middleware for file uploads
+app.use( fileUpload({ useTempFiles: true }) );
 
 // Require Database
 const db = require('./db/db');
