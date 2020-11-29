@@ -3,5 +3,5 @@
     "restart": "killport 3000",
     "crash": "killport 3000"
   },
-  "delay": "1500"
+  "delay": "0"
 }
