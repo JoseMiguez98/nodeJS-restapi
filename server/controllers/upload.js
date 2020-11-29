@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
 const { verifyToken } = require('../middlewares/auth');
+const validExtensions = ['jpg', 'jpeg', 'gif', 'png'];
+
+function isValidExt(ext) {
+  return validExtensions.includes(ext);
+}
 
 app.put('/upload', verifyToken, (req, res) => {
 
@@ -11,9 +16,18 @@ app.put('/upload', verifyToken, (req, res) => {
     });
   }
 
-  let { file } = req.files;
+  const { file } = req.files;
+  const fileNameSplitted = file.name.split('.');
+  const fileExt = fileNameSplitted[fileNameSplitted.length - 1];
 
-  file.mv('uploads/filename.jpg', (err) => {
+  if(!isValidExt(fileExt)) {
+    return res.status(400).json({
+      ok: false,
+      err: `Not a valid extension, extensions suportted are [${ validExtensions.join(', ') }] but you sent a '.${ fileExt }' instead`,
+    });
+  }
+
+  file.mv(`uploads/${file.name}`, (err) => {
 
     if (err) {
       return res.status(500).json({
