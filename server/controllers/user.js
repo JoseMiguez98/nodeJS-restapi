@@ -44,19 +44,26 @@ app.get('/user', verifyToken, (req, res) => {
 });
 
 app.get('/user/:id', verifyToken, (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   User.find({ _id: id })
   .exec((err, user) => {
 
     if(err) {
-      res.status(400).json({
+      return res.status(400).json({
         ok: false,
         err,
       });
     }
 
-    res.json({
+    if(!user) {
+      return res.status(404).json({
+        ok: false,
+        err: 'User not found',
+      });
+    }
+
+    return res.json({
       ok: true,
       user,
     });
@@ -117,13 +124,13 @@ app.put('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
     runValidators: true,
   }, (err, userDB) => {
     if(err) {
-      res.status(400).json({
+      return res.status(400).json({
         ok: false,
         err,
       });
     }
 
-    res.json({
+    return res.json({
       ok: true,
       userDB,
     });
@@ -144,9 +151,7 @@ app.delete('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
     if (!user) {
       return res.status(404).json({
         ok: false,
-        err: {
-          message: 'User not found',
-        },
+        err: 'User not found',
       });
     }
 
