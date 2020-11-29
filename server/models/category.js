@@ -10,6 +10,7 @@ const categorySchema = new Schema({
   },
   user: {
     type: mongoose.Types.ObjectId,
+    ref: 'user',
   }
 });
 

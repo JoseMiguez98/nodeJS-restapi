@@ -6,6 +6,8 @@ const app = express();
 app.get('/category', verifyToken, (req, res) => {
 
   Category.find()
+  .sort('name')
+  .populate('user', 'name email')
   .exec((err, categories) => {
 
     if (err) {
@@ -39,6 +41,7 @@ app.get('/category/:id', verifyToken, (req, res) => {
   const { id } = req.params;
 
   Category.findById(id)
+  .populate('user', 'name email')
   .exec((err, category) => {
 
     if (err) {
