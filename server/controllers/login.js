@@ -50,9 +50,9 @@ async function verify(token) {
     // Or, if multiple clients access the backend:
     //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
   });
-  const { name, email } = ticket.getPayload();
+  const { name, email, picture } = ticket.getPayload();
 
-  return { name, email };
+  return { name, email, picture };
 }
 
 app.post('/google', async (req, res) => {
@@ -66,7 +66,7 @@ app.post('/google', async (req, res) => {
     });
   });
 
-  const { email, name } = googleUser;
+  const { email, name, picture } = googleUser;
 
   User.findOne({ email }, (err, userDB) => {
     if(err) {
@@ -87,6 +87,7 @@ app.post('/google', async (req, res) => {
           },
         });
       }
+
       // User registered with google
       const token = jwt.sign({ userDB }, process.env.JWT_SEED, { expiresIn: process.env.JWT_EXPIRE });
 
@@ -96,11 +97,13 @@ app.post('/google', async (req, res) => {
         token,
       });
     }
+
     // User doesn't exists in database
     let newUser = new User();
 
     newUser.name = name;
     newUser.email = email;
+    newUser.img = picture;
     newUser.google = true;
     newUser.pass = ':)';
 

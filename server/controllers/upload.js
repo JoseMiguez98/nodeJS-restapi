@@ -1,8 +1,15 @@
 const express = require('express');
 const app = express();
-const { verifyToken } = require('../middlewares/auth');
+const fs = require('fs');
+const path = require('path');
+
 const validExtensions = ['jpg', 'jpeg', 'gif', 'png'];
 const validTypes = ['user', 'product'];
+
+const { verifyToken } = require('../middlewares/auth');
+
+const User = require('../models/user');
+const Product = require('../models/product');
 
 function isValidExt(ext) {
   return validExtensions.includes(ext);
@@ -10,6 +17,84 @@ function isValidExt(ext) {
 
 function isValidType(type) {
   return validTypes.includes(type);
+}
+
+function createProductImage(id, res, img) {
+  Product.findByIdAndUpdate(id, { img }, (err, productDB) => {
+    if (err) {
+      deleteImage(img, 'product');
+
+      return res.status(500).json({
+        ok: false,
+        err,
+      });
+    }
+
+    if(!productDB) {
+      deleteImage(img, 'product');
+
+      return res.status(404).json({
+        ok: false,
+        message: 'Product not found',
+      });
+    }
+
+    deleteImage(productDB.img, 'product');
+
+    // Set img to return new product on response
+    productDB.img = img;
+
+    return res.json({
+      ok: true,
+      productDB,
+      message: 'Image updated successfully',
+    })
+  });
+}
+
+function createUserImage(id, res, img) {
+  User.findByIdAndUpdate(id, { img }, (err, userDB) => {
+
+    if (err) {
+      deleteImage(img, 'user');
+
+      return res.status(500).json({
+        ok: false,
+        err,
+      });
+    }
+
+    if(!userDB) {
+      deleteImage(img, 'user');
+
+      return res.status(404).json({
+        ok: false,
+        message: 'User not found',
+      });
+    }
+
+    deleteImage(userDB.img, 'user');
+
+    // Set img to return new user on response
+    userDB.img = img;
+
+    return res.json({
+      ok: true,
+      userDB,
+      message: 'Image updated successfully',
+    });
+  });
+}
+
+function deleteImage(img, type) {
+  const imgPath = path.resolve(__dirname, `../../uploads/${type}/${img}`);
+
+  if(fs.existsSync(imgPath)) {
+    fs.unlinkSync(imgPath);
+    return true;
+  }
+
+  return false;
 }
 
 app.put('/upload/:type/:id', verifyToken, (req, res) => {
@@ -48,16 +133,19 @@ app.put('/upload/:type/:id', verifyToken, (req, res) => {
   file.mv(`uploads/${ type }/${ fileName }`, (err) => {
 
     if (err) {
+      deleteImage(fileName, type);
+
       return res.status(500).json({
         ok: false,
         err,
       });
     }
 
-    return res.json({
-      ok: true,
-      message: 'File uploaded successfully',
-    });
+    if(type === 'user') {
+      createUserImage(id, res, fileName);
+    } else {
+      createProductImage(id, res, fileName);
+    }
   });
 });
 

@@ -27,7 +27,24 @@ const verifyAdminRole = (req, res, next) => {
   });
 }
 
+const verifyURLToken = (req, res, next) => {
+  const { token } = req.query;
+
+  jwt.verify(token, process.env.JWT_SEED, (err, decoded) => {
+    if(err) {
+      return res.status(401).json({
+        ok: false,
+        err,
+      });
+    }
+
+    req.user = decoded.userDB;
+    return next();
+  });
+}
+
 module.exports = {
   verifyToken,
   verifyAdminRole,
+  verifyURLToken,
 };
